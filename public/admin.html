@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Blütenpfad · Verwaltung</title>
+<link rel="icon" href="/icon.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Spline+Sans+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/admin.css" />
+</head>
+<body>
+
+<div class="bg-leaves" aria-hidden="true">
+  <span class="bl b1">🌿</span><span class="bl b2">🍃</span><span class="bl b3">🌾</span><span class="bl b4">🦋</span>
+</div>
+
+<!-- ░░ LOGIN ░░ -->
+<div class="gate" id="gate" hidden>
+  <div class="gate-card">
+    <div class="gate-logo" aria-hidden="true">
+      <svg viewBox="0 0 64 64" width="56" height="56">
+        <g transform="translate(32 26)">
+          <g fill="#ef9bbd"><ellipse cx="0" cy="-13" rx="7" ry="11"/><ellipse cx="0" cy="13" rx="7" ry="11"/><ellipse cx="-13" cy="0" rx="11" ry="7"/><ellipse cx="13" cy="0" rx="11" ry="7"/></g>
+          <g fill="#f4a6c0"><ellipse cx="-9" cy="-9" rx="6.5" ry="9.5" transform="rotate(45 -9 -9)"/><ellipse cx="9" cy="-9" rx="6.5" ry="9.5" transform="rotate(-45 9 -9)"/><ellipse cx="-9" cy="9" rx="6.5" ry="9.5" transform="rotate(-45 -9 9)"/><ellipse cx="9" cy="9" rx="6.5" ry="9.5" transform="rotate(45 9 9)"/></g>
+          <circle r="7" fill="#f3c44d"/><circle r="7" fill="none" stroke="#e0a92e" stroke-width="1.5"/>
+        </g>
+      </svg>
+    </div>
+    <p class="gate-eyebrow">Blütenpfad</p>
+    <h1 class="gate-title">Verwaltung</h1>
+    <p class="gate-sub">Zugang nur für Förster:innen 🌲</p>
+    <form id="gate-form" autocomplete="off">
+      <label class="fld"><span>Benutzer</span><input type="text" id="gate-user" autocomplete="username" placeholder="admin" /></label>
+      <label class="fld"><span>Passwort</span><input type="password" id="gate-pass" autocomplete="current-password" placeholder="••••••••" /></label>
+      <p class="gate-err" id="gate-err" hidden></p>
+      <button type="submit" class="btn btn-primary" id="gate-submit">Einloggen</button>
+    </form>
+    <p class="gate-note" id="gate-note" hidden></p>
+  </div>
+</div>
+
+<!-- ░░ PANEL (Desktop-Dashboard mit Sidebar) ░░ -->
+<div class="panel" id="panel" hidden>
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <span class="sb-mark" aria-hidden="true">🌸</span>
+      <div><p class="sb-name">Blütenpfad</p><p class="sb-tag">Verwaltung</p></div>
+    </div>
+    <nav class="sb-nav" id="sb-nav">
+      <button class="sb-link active" data-view="overview" type="button"><span class="sb-ic">📊</span> Übersicht</button>
+      <button class="sb-link" data-view="catalog" type="button"><span class="sb-ic">📖</span> Arten</button>
+      <button class="sb-link" data-view="quests" type="button"><span class="sb-ic">🎯</span> Quests</button>
+    </nav>
+    <div class="sb-foot">
+      <div class="sb-user"><span class="sb-user-av">🌲</span><span class="who" id="who">–</span></div>
+      <div class="sb-actions">
+        <button class="btn btn-ghost sm" id="btn-refresh" title="Aktualisieren">↻ Aktualisieren</button>
+        <button class="btn btn-ghost sm" id="btn-logout">Abmelden</button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <!-- ░ ÜBERSICHT ░ -->
+    <div class="adm-view" id="view-overview">
+      <header class="view-head"><h1>Übersicht</h1><p class="view-sub">Wer ist unterwegs auf dem Blütenpfad?</p></header>
+      <section class="stat-row" id="stat-row"></section>
+      <section class="grid-2">
+        <div class="card">
+          <div class="card-head"><h2>📈 Funde · letzte 14 Tage</h2><span class="card-hint" id="fc-hint"></span></div>
+          <div class="daychart" id="finds-chart"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h2>🌟 Beliebteste Arten</h2><span class="card-hint">nach Funden</span></div>
+          <div class="bars" id="top-species"></div>
+        </div>
+      </section>
+      <section class="grid-2">
+        <div class="card">
+          <div class="card-head"><h2>📊 Level-Verteilung</h2><span class="card-hint" id="ld-hint"></span></div>
+          <div class="bars" id="level-dist"></div>
+        </div>
+        <div class="card activity-card">
+          <div class="card-head"><h2>🌱 Letzte Aktivität</h2></div>
+          <div class="activity-feed" id="activity-feed"></div>
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-head"><h2>📦 Kennzahlen & Verteilung</h2></div>
+        <div class="mini-stats" id="mini-stats"></div>
+        <div class="split-wrap">
+          <div class="split-label"><span>🌿 Pflanzen <b id="sp-plant">0</b></span><span><b id="sp-insect">0</b> Insekten 🐛</span></div>
+          <div class="split-bar"><div class="split-fill" id="split-fill"></div></div>
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-head">
+          <h2>👥 Nutzer <span class="count-pill" id="user-count">0</span></h2>
+          <input type="search" id="user-search" class="search" placeholder="🔍 Name oder E-Mail…" />
+        </div>
+        <div class="table-wrap">
+          <table class="utable">
+            <thead><tr>
+              <th data-sort="name">Nutzer</th>
+              <th data-sort="level" class="num">Lvl</th>
+              <th data-sort="totalFinds" class="num">Funde</th>
+              <th data-sort="uniqueSpecies" class="num">Arten</th>
+              <th data-sort="plantCount" class="num">🌿</th>
+              <th data-sort="insectCount" class="num">🐛</th>
+              <th data-sort="friends" class="num">Freunde</th>
+              <th data-sort="lastActivity">Aktiv</th>
+              <th data-sort="emailVerified" class="num">✓</th>
+            </tr></thead>
+            <tbody id="user-rows"></tbody>
+          </table>
+        </div>
+        <p class="empty" id="user-empty" hidden>Keine Nutzer gefunden.</p>
+      </section>
+    </div>
+
+    <!-- ░ ARTEN-KATALOG ░ -->
+    <div class="adm-view" id="view-catalog" hidden>
+      <header class="view-head"><h1>Arten-Katalog</h1><p class="view-sub" id="cat-summary">…</p></header>
+      <section class="card">
+        <div class="card-head">
+          <h2>Verfügbare Arten <span class="count-pill" id="cat-count">0</span></h2>
+          <input type="search" id="cat-search" class="search" placeholder="🔍 Art, lat. Name, Lebensraum…" />
+        </div>
+        <div class="pill-filter" id="cat-filter">
+          <button class="pill active" data-cat="all" type="button">Alle</button>
+          <button class="pill" data-cat="plant" type="button">🌿 Pflanzen</button>
+          <button class="pill" data-cat="insect" type="button">🐛 Insekten</button>
+          <button class="pill" data-cat="undiscovered" type="button">🔒 unentdeckt</button>
+        </div>
+        <p class="tap-hint">Tipp: Zeile anklicken, um zu sehen, welche Nutzer die Art entdeckt haben.</p>
+        <div class="table-wrap">
+          <table class="utable ctable">
+            <thead><tr>
+              <th data-sort="name">Art</th>
+              <th data-sort="cat">Kategorie</th>
+              <th data-sort="rarity" class="num">Rarität</th>
+              <th data-sort="period">Saison</th>
+              <th data-sort="habitats">Vorkommen</th>
+              <th data-sort="finds" class="num">Funde</th>
+              <th data-sort="users" class="num">Nutzer</th>
+            </tr></thead>
+            <tbody id="cat-rows"></tbody>
+          </table>
+        </div>
+        <p class="empty" id="cat-empty" hidden>Keine Art gefunden.</p>
+      </section>
+    </div>
+
+    <!-- ░ QUESTS ░ -->
+    <div class="adm-view" id="view-quests" hidden>
+      <header class="view-head"><h1>Quests</h1><p class="view-sub">Saison-Sets & Fortschritt — Quest anklicken für die Teilnehmer.</p></header>
+      <div class="quest-grid" id="quests-body"><p class="empty">Lade Quests…</p></div>
+    </div>
+  </main>
+</div>
+
+<!-- Drill-down-Drawer (Nutzer / Art / Quest) -->
+<div class="drawer-wrap" id="drawer" hidden>
+  <div class="drawer-backdrop" data-close></div>
+  <aside class="drawer">
+    <div class="drawer-bar">
+      <button class="dr-back" id="drawer-back" type="button" hidden>← zurück</button>
+      <button class="x" data-close aria-label="schließen" type="button">✕</button>
+    </div>
+    <div id="drawer-body"></div>
+  </aside>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="/species.js"></script>
+<script src="/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Blütenpfad · Logo-Studien</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#fbf5e6; --card:#fffdf6; --ink:#4a4a37; --ink-soft:#8a886e; --ink-faint:#b3ad93;
+    --leaf:#82ad52; --leaf-d:#5f8a39; --leaf-l:#a9d27f; --leaf-pale:#e8f1d6;
+    --corn:#6e8fd6; --poppy:#ec7a64; --butter:#f3c34c; --lav:#a48fd0; --blossom:#ef9bbd;
+    --sky:#86c0e6; --honey:#e9a94e; --border:#e7d9b6; --border-d:#d9c79b;
+    --shadow:rgba(120,96,46,.16); --shadow-d:rgba(120,96,46,.28);
+    --r:22px; --r-lg:30px; --r-sm:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Nunito',system-ui,sans-serif; color:var(--ink); background:var(--paper);
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(169,210,127,.20), transparent 38%),
+      radial-gradient(circle at 88% 12%, rgba(239,155,189,.16), transparent 36%),
+      radial-gradient(circle at 78% 90%, rgba(110,143,214,.13), transparent 42%);
+    min-height:100vh; padding:48px 22px 90px; position:relative; overflow-x:hidden;
+  }
+  /* soft grain */
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/><feColorMatrix type='saturate' values='0'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='.04'/></svg>");}
+  .float{position:fixed;font-size:26px;opacity:.5;pointer-events:none;animation:drift 13s ease-in-out infinite;z-index:0}
+  .f1{top:14%;left:6%;animation-delay:0s}.f2{top:62%;left:4%;animation-delay:-4s;font-size:20px}
+  .f3{top:24%;right:7%;animation-delay:-7s}.f4{top:78%;right:9%;animation-delay:-2s;font-size:22px}
+  @keyframes drift{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-18px) rotate(8deg)}}
+
+  .wrap{max-width:1080px;margin:0 auto;position:relative;z-index:1}
+  header.page{text-align:center;margin-bottom:46px;animation:rise .7s cubic-bezier(.2,.7,.2,1) both}
+  .kicker{display:inline-block;font-family:'Fredoka';font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+    font-size:12px;color:var(--leaf-d);background:var(--leaf-pale);border:1px solid var(--border);
+    padding:6px 14px;border-radius:999px;margin-bottom:16px}
+  header.page h1{font-family:'Fredoka';font-weight:700;font-size:clamp(30px,5vw,46px);color:var(--ink);letter-spacing:-.01em}
+  header.page p{color:var(--ink-soft);font-size:17px;margin-top:8px;font-weight:600}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+  .card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r-lg);
+    box-shadow:0 14px 34px -16px var(--shadow);padding:30px 26px 26px;position:relative;overflow:hidden;
+    animation:rise .7s cubic-bezier(.2,.7,.2,1) both}
+  .card:nth-child(1){animation-delay:.08s}.card:nth-child(2){animation-delay:.18s}.card:nth-child(3){animation-delay:.28s}
+  .card::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+    box-shadow:inset 0 2px 0 rgba(255,255,255,.7)}
+  .tag{font-family:'Fredoka';font-weight:600;font-size:13px;color:var(--ink-soft);
+    display:inline-flex;align-items:center;gap:7px}
+  .tag b{display:grid;place-items:center;width:24px;height:24px;border-radius:8px;color:#fff;font-size:13px}
+  .v1 .tag b{background:var(--blossom)}.v2 .tag b{background:var(--leaf-d)}.v3 .tag b{background:var(--corn)}
+  .name{font-family:'Fredoka';font-weight:600;font-size:20px;color:var(--ink);margin:4px 0 2px}
+  .desc{font-size:13.5px;color:var(--ink-soft);line-height:1.5;margin-bottom:18px;min-height:60px}
+
+  .stage{background:
+      linear-gradient(180deg,#fffefb,#fbf5e6);
+    border:1.5px dashed var(--border-d);border-radius:var(--r);padding:26px;display:grid;place-items:center;margin-bottom:18px}
+  .stage svg{width:148px;height:148px;display:block;filter:drop-shadow(0 8px 14px var(--shadow))}
+
+  .lockup{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--leaf-pale);
+    border:1px solid var(--border);border-radius:var(--r);margin-bottom:16px}
+  .lockup svg{width:54px;height:54px;flex:none}
+  .lockup .txt h2{font-family:'Fredoka';font-weight:700;font-size:24px;line-height:1;color:var(--ink);letter-spacing:-.01em}
+  .lockup .txt span{font-family:'Nunito';font-weight:700;font-size:12px;color:var(--ink-soft);letter-spacing:.02em}
+
+  .sizes{display:flex;align-items:flex-end;gap:16px;justify-content:center;padding-top:4px}
+  .sz{display:flex;flex-direction:column;align-items:center;gap:6px}
+  .sz small{font-size:10.5px;color:var(--ink-faint);font-weight:700}
+  .sz .chip{display:grid;place-items:center;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 4px 10px -5px var(--shadow)}
+  .chip-16{width:16px;height:16px;border-radius:5px}.chip-32{width:32px;height:32px;border-radius:8px}
+  .chip-16 svg{width:16px;height:16px}.chip-32 svg{width:32px;height:32px}
+  .tile{width:60px;height:60px;border-radius:15px;display:grid;place-items:center;box-shadow:0 6px 14px -6px var(--shadow-d)}
+  .tile svg{width:60px;height:60px}
+
+  footer.page{text-align:center;margin-top:44px;color:var(--ink-soft);font-weight:600;font-size:14px;
+    animation:rise .7s .4s both}
+  footer.page code{font-family:'Fredoka';background:var(--leaf-pale);border:1px solid var(--border);
+    padding:2px 9px;border-radius:8px;color:var(--leaf-d);font-size:13px}
+  @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<span class="float f1">🌼</span><span class="float f2">🦋</span><span class="float f3">🌸</span><span class="float f4">🌿</span>
+
+<div class="wrap">
+  <header class="page">
+    <span class="kicker">Logo-Studien · 3 Richtungen</span>
+    <h1>Blütenpfad</h1>
+    <p>Cozy-Cream, Fredoka &amp; Nunito · Marke · Wortmarke · Favicon &amp; App-Icon</p>
+  </header>
+
+  <div class="grid">
+
+    <!-- ════ VARIANTE 1 — BADGE „Blüte am Pfad" ════ -->
+    <article class="card v1">
+      <span class="tag"><b>A</b> Badge · klassisch</span>
+      <div class="name">Blüte am Pfad</div>
+      <p class="desc">Critterpedia-Stempel: ein runder Wiesen-Anstecker, gewundener Pfad führt zur Blüte. Erzählt den Namen wörtlich, fühlt sich wie ein gesammeltes Abzeichen an.</p>
+
+      <div class="stage">
+        <svg viewBox="0 0 100 100" role="img" aria-label="Blütenpfad Badge">
+          <circle cx="50" cy="50" r="47" fill="#fffdf6" stroke="#a9d27f" stroke-width="3.5"/>
+          <circle cx="50" cy="50" r="40.5" fill="#e8f1d6"/>
+          <!-- Hügel -->
+          <path d="M11 64 Q34 52 50 60 Q70 70 89 58 L89 86 A40.5 40.5 0 0 1 11 86 Z" fill="#cfe6ad"/>
+          <path d="M11 70 Q33 60 52 67 Q72 75 89 66 L89 90 A40.5 40.5 0 0 1 11 90 Z" fill="#bcdb93"/>
+          <!-- Pfad -->
+          <path d="M50 90 C36 80 64 72 50 62" fill="none" stroke="#e9c98a" stroke-width="8" stroke-linecap="round"/>
+          <path d="M50 89 C38 80 62 73 50 63" fill="none" stroke="#fffdf6" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="1 6"/>
+          <!-- Stiel + Blatt -->
+          <path d="M50 62 q-1 -7 0 -12" stroke="#5f8a39" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M50 56 q-8 -2 -10 -9 q9 -1 11 7 z" fill="#7aa24a"/>
+          <!-- Blüte -->
+          <g transform="translate(50 38)">
+            <g fill="#ef9bbd"><ellipse cx="0" cy="-13" rx="7" ry="11"/><ellipse cx="0" cy="13" rx="7" ry="11"/><ellipse cx="-13" cy="0" rx="11" ry="7"/><ellipse cx="13" cy="0" rx="11" ry="7"/></g>
+            <g fill="#f4a6c0"><ellipse cx="-9" cy="-9" rx="6.5" ry="9.5" transform="rotate(45 -9 -9)"/><ellipse cx="9" cy="-9" rx="6.5" ry="9.5" transform="rotate(-45 9 -9)"/><ellipse cx="-9" cy="9" rx="6.5" ry="9.5" transform="rotate(-45 -9 9)"/><ellipse cx="9" cy="9" rx="6.5" ry="9.5" transform="rotate(45 9 9)"/></g>
+            <circle r="7" fill="#f3c44d"/><circle r="7" fill="none" stroke="#e0a92e" stroke-width="1.5"/>
+            <circle cx="-2" cy="-2" r="1.5" fill="#fff" opacity=".75"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="lockup">
+        <svg viewBox="0 0 100 100" aria-hidden="true">
+          <circle cx="50" cy="50" r="47" fill="#fffdf6" stroke="#a9d27f" stroke-width="3.5"/>
+          <circle cx="50" cy="50" r="40.5" fill="#e8f1d6"/>
+          <path d="M11 70 Q33 60 52 67 Q72 75 89 66 L89 90 A40.5 40.5 0 0 1 11 90 Z" fill="#bcdb93"/>
+          <path d="M50 90 C36 80 64 72 50 62" fill="none" stroke="#e9c98a" stroke-width="8" stroke-linecap="round"/>
+          <path d="M50 62 q-1 -7 0 -12" stroke="#5f8a39" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M50 56 q-8 -2 -10 -9 q9 -1 11 7 z" fill="#7aa24a"/>
+          <g transform="translate(50 38)">
+            <g fill="#ef9bbd"><ellipse cx="0" cy="-13" rx="7" ry="11"/><ellipse cx="0" cy="13" rx="7" ry="11"/><ellipse cx="-13" cy="0" rx="11" ry="7"/><ellipse cx="13" cy="0" rx="11" ry="7"/></g>
+            <circle r="7" fill="#f3c44d"/>
+          </g>
+        </svg>
+        <div class="txt"><h2>Blütenpfad</h2><span>dein Natur-Dex</span></div>
+      </div>
+
+      <div class="sizes">
+        <div class="sz"><div class="chip chip-16"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="47" fill="#e8f1d6" stroke="#a9d27f" stroke-width="5"/><g transform="translate(50 50)" fill="#ef9bbd"><ellipse cx="0" cy="-22" rx="12" ry="18"/><ellipse cx="0" cy="22" rx="12" ry="18"/><ellipse cx="-22" cy="0" rx="18" ry="12"/><ellipse cx="22" cy="0" rx="18" ry="12"/></g><circle cx="50" cy="50" r="12" fill="#f3c44d"/></svg></div><small>16px</small></div>
+        <div class="sz"><div class="chip chip-32"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="47" fill="#e8f1d6" stroke="#a9d27f" stroke-width="4"/><g transform="translate(50 47)" fill="#ef9bbd"><ellipse cx="0" cy="-17" rx="9" ry="14"/><ellipse cx="0" cy="17" rx="9" ry="14"/><ellipse cx="-17" cy="0" rx="14" ry="9"/><ellipse cx="17" cy="0" rx="14" ry="9"/></g><circle cx="50" cy="47" r="9" fill="#f3c44d"/></svg></div><small>32px</small></div>
+        <div class="sz"><div class="tile" style="background:#e8f1d6"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="34" fill="#fffdf6" stroke="#a9d27f" stroke-width="3"/><g transform="translate(50 47)"><g fill="#ef9bbd"><ellipse cx="0" cy="-13" rx="7" ry="11"/><ellipse cx="0" cy="13" rx="7" ry="11"/><ellipse cx="-13" cy="0" rx="11" ry="7"/><ellipse cx="13" cy="0" rx="11" ry="7"/></g><circle r="7" fill="#f3c44d"/></g></svg></div><small>App-Icon</small></div>
+      </div>
+    </article>
+
+    <!-- ════ VARIANTE 2 — LINIE „erblühender Pfad" ════ -->
+    <article class="card v2">
+      <span class="tag"><b>B</b> Linie · minimal</span>
+      <div class="name">Erblühender Pfad</div>
+      <p class="desc">Ein einziger, durchgehender Strich: der Weg schwingt nach oben und entfaltet sich zur Blüte. Modern, leicht, skaliert winzig glasklar — perfekt als Favicon.</p>
+
+      <div class="stage">
+        <svg viewBox="0 0 100 100" role="img" aria-label="Blütenpfad Linie">
+          <!-- Pfad -->
+          <path d="M26 88 C24 72 44 70 46 56" fill="none" stroke="#5f8a39" stroke-width="6.5" stroke-linecap="round"/>
+          <!-- Blatt am Pfad -->
+          <path d="M30 76 q-12 1 -16 -7 q11 -5 17 2 z" fill="#a9d27f"/>
+          <!-- Stiel zur Blüte -->
+          <path d="M46 56 C47 50 52 48 52 42" fill="none" stroke="#5f8a39" stroke-width="6.5" stroke-linecap="round"/>
+          <!-- Blüten-Outline (5 Blütenblätter, Strich) -->
+          <g transform="translate(53 32)" fill="none" stroke="#ec7a64" stroke-width="5" stroke-linejoin="round">
+            <path d="M0 -20 C9 -20 11 -9 4 -5 C12 -7 18 1 11 8 C7 16 -3 13 0 4 C-3 13 -13 16 -17 8 C-23 1 -15 -7 -8 -5 C-15 -9 -11 -20 0 -20 Z" transform="scale(.92)"/>
+          </g>
+          <circle cx="53" cy="32" r="7.5" fill="#f3c44d" stroke="#e0a92e" stroke-width="2"/>
+        </svg>
+      </div>
+
+      <div class="lockup">
+        <svg viewBox="0 0 100 100" aria-hidden="true">
+          <path d="M26 88 C24 72 44 70 46 56" fill="none" stroke="#5f8a39" stroke-width="6.5" stroke-linecap="round"/>
+          <path d="M46 56 C47 50 52 48 52 42" fill="none" stroke="#5f8a39" stroke-width="6.5" stroke-linecap="round"/>
+          <g transform="translate(53 32)" fill="none" stroke="#ec7a64" stroke-width="5" stroke-linejoin="round">
+            <path d="M0 -20 C9 -20 11 -9 4 -5 C12 -7 18 1 11 8 C7 16 -3 13 0 4 C-3 13 -13 16 -17 8 C-23 1 -15 -7 -8 -5 C-15 -9 -11 -20 0 -20 Z" transform="scale(.92)"/>
+          </g>
+          <circle cx="53" cy="32" r="7.5" fill="#f3c44d"/>
+        </svg>
+        <div class="txt"><h2>Blütenpfad</h2><span>dein Natur-Dex</span></div>
+      </div>
+
+      <div class="sizes">
+        <div class="sz"><div class="chip chip-16"><svg viewBox="0 0 100 100"><path d="M30 92 C28 70 52 70 54 50" fill="none" stroke="#5f8a39" stroke-width="11" stroke-linecap="round"/><g transform="translate(55 32)" fill="none" stroke="#ec7a64" stroke-width="9" stroke-linejoin="round"><path d="M0 -20 C9 -20 11 -9 4 -5 C12 -7 18 1 11 8 C7 16 -3 13 0 4 C-3 13 -13 16 -17 8 C-23 1 -15 -7 -8 -5 C-15 -9 -11 -20 0 -20 Z"/></g><circle cx="55" cy="32" r="9" fill="#f3c44d"/></svg></div><small>16px</small></div>
+        <div class="sz"><div class="chip chip-32"><svg viewBox="0 0 100 100"><path d="M28 92 C26 72 50 70 52 52" fill="none" stroke="#5f8a39" stroke-width="8" stroke-linecap="round"/><g transform="translate(54 32)" fill="none" stroke="#ec7a64" stroke-width="6.5" stroke-linejoin="round"><path d="M0 -20 C9 -20 11 -9 4 -5 C12 -7 18 1 11 8 C7 16 -3 13 0 4 C-3 13 -13 16 -17 8 C-23 1 -15 -7 -8 -5 C-15 -9 -11 -20 0 -20 Z"/></g><circle cx="54" cy="32" r="8" fill="#f3c44d"/></svg></div><small>32px</small></div>
+        <div class="sz"><div class="tile" style="background:#fffdf6;border:1.5px solid #e7d9b6"><svg viewBox="0 0 100 100"><path d="M30 86 C28 68 50 68 51 53" fill="none" stroke="#5f8a39" stroke-width="6.5" stroke-linecap="round"/><g transform="translate(53 36)" fill="none" stroke="#ec7a64" stroke-width="5" stroke-linejoin="round"><path d="M0 -18 C8 -18 10 -8 4 -4 C11 -6 16 1 10 7 C6 14 -3 12 0 4 C-3 12 -12 14 -15 7 C-21 1 -14 -6 -7 -4 C-13 -8 -10 -18 0 -18 Z"/></g><circle cx="53" cy="36" r="7" fill="#f3c44d"/></svg></div><small>App-Icon</small></div>
+      </div>
+    </article>
+
+    <!-- ════ VARIANTE 3 — APP-TILE „Wiesen-Kachel" ════ -->
+    <article class="card v3">
+      <span class="tag"><b>C</b> Tile · App-first</span>
+      <div class="name">Wiesen-Kachel</div>
+      <p class="desc">Vom Homescreen aus gedacht: satte Blattgrün-Kachel, helle Blüte als Silhouette, Pfad als Lichtspur. Maximaler Kontrast, knallt klein wie groß — top als PWA-/maskable-Icon.</p>
+
+      <div class="stage">
+        <svg viewBox="0 0 100 100" role="img" aria-label="Blütenpfad Kachel">
+          <defs>
+            <linearGradient id="g3" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#a9d27f"/><stop offset="1" stop-color="#5f8a39"/>
+            </linearGradient>
+            <radialGradient id="glow3" cx=".5" cy=".42" r=".6">
+              <stop offset="0" stop-color="#fffdf6" stop-opacity=".9"/><stop offset="1" stop-color="#fffdf6" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <rect x="6" y="6" width="88" height="88" rx="24" fill="url(#g3)"/>
+          <rect x="6" y="6" width="88" height="88" rx="24" fill="url(#glow3)"/>
+          <!-- Pfad als Lichtspur -->
+          <path d="M50 86 C40 74 62 70 50 58" fill="none" stroke="#fffdf6" stroke-width="6" stroke-linecap="round" opacity=".85"/>
+          <!-- Blüte als helle Silhouette -->
+          <g transform="translate(50 42)">
+            <g fill="#fffdf6"><ellipse cx="0" cy="-16" rx="8.5" ry="13"/><ellipse cx="0" cy="16" rx="8.5" ry="13"/><ellipse cx="-16" cy="0" rx="13" ry="8.5"/><ellipse cx="16" cy="0" rx="13" ry="8.5"/>
+              <ellipse cx="-11" cy="-11" rx="8" ry="11.5" transform="rotate(45 -11 -11)"/><ellipse cx="11" cy="-11" rx="8" ry="11.5" transform="rotate(-45 11 -11)"/><ellipse cx="-11" cy="11" rx="8" ry="11.5" transform="rotate(-45 -11 11)"/><ellipse cx="11" cy="11" rx="8" ry="11.5" transform="rotate(45 11 11)"/></g>
+            <circle r="8.5" fill="#f3c44d"/><circle r="8.5" fill="none" stroke="#e0a92e" stroke-width="1.6"/>
+            <circle cx="-2.4" cy="-2.4" r="1.8" fill="#fff" opacity=".8"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="lockup" style="background:#dfeccb">
+        <svg viewBox="0 0 100 100" aria-hidden="true">
+          <defs><linearGradient id="g3b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a9d27f"/><stop offset="1" stop-color="#5f8a39"/></linearGradient></defs>
+          <rect x="6" y="6" width="88" height="88" rx="24" fill="url(#g3b)"/>
+          <path d="M50 86 C40 74 62 70 50 58" fill="none" stroke="#fffdf6" stroke-width="6" stroke-linecap="round" opacity=".85"/>
+          <g transform="translate(50 42)"><g fill="#fffdf6"><ellipse cx="0" cy="-16" rx="8.5" ry="13"/><ellipse cx="0" cy="16" rx="8.5" ry="13"/><ellipse cx="-16" cy="0" rx="13" ry="8.5"/><ellipse cx="16" cy="0" rx="13" ry="8.5"/></g><circle r="8.5" fill="#f3c44d"/></g>
+        </svg>
+        <div class="txt"><h2>Blütenpfad</h2><span>dein Natur-Dex</span></div>
+      </div>
+
+      <div class="sizes">
+        <div class="sz"><div class="chip chip-16" style="border:none"><svg viewBox="0 0 100 100"><rect width="100" height="100" rx="26" fill="#5f8a39"/><g transform="translate(50 46)" fill="#fffdf6"><ellipse cx="0" cy="-20" rx="11" ry="16"/><ellipse cx="0" cy="20" rx="11" ry="16"/><ellipse cx="-20" cy="0" rx="16" ry="11"/><ellipse cx="20" cy="0" rx="16" ry="11"/></g><circle cx="50" cy="46" r="11" fill="#f3c44d"/></svg></div><small>16px</small></div>
+        <div class="sz"><div class="chip chip-32" style="border:none"><svg viewBox="0 0 100 100"><rect width="100" height="100" rx="26" fill="url(#g3b)"/><g transform="translate(50 44)" fill="#fffdf6"><ellipse cx="0" cy="-16" rx="8.5" ry="13"/><ellipse cx="0" cy="16" rx="8.5" ry="13"/><ellipse cx="-16" cy="0" rx="13" ry="8.5"/><ellipse cx="16" cy="0" rx="13" ry="8.5"/></g><circle cx="50" cy="44" r="8.5" fill="#f3c44d"/></svg></div><small>32px</small></div>
+        <div class="sz"><div class="tile" style="padding:0"><svg viewBox="0 0 100 100"><rect width="100" height="100" rx="24" fill="url(#g3b)"/><path d="M50 88 C40 76 62 72 50 60" fill="none" stroke="#fffdf6" stroke-width="6" stroke-linecap="round" opacity=".85"/><g transform="translate(50 44)"><g fill="#fffdf6"><ellipse cx="0" cy="-16" rx="8.5" ry="13"/><ellipse cx="0" cy="16" rx="8.5" ry="13"/><ellipse cx="-16" cy="0" rx="13" ry="8.5"/><ellipse cx="16" cy="0" rx="13" ry="8.5"/></g><circle r="8.5" fill="#f3c44d"/></g></svg></div><small>App-Icon</small></div>
+      </div>
+    </article>
+
+  </div>
+
+  <footer class="page">
+    Sag mir die Nummer (A/B/C) — ich baue die gewählte Marke als <code>icon.svg</code>, Header-Logo &amp; PWA-Icons sauber ein. Mischen geht auch (z.&nbsp;B. Marke A, Linie B als Favicon).
+  </footer>
+</div>
+</body>
+</html>

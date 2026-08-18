@@ -1,0 +1,26 @@
+# Laufzeit-Daten — nie ins Repo
+node_modules/
+data/
+certs/
+uploads/
+thumbs/
+*.db
+*.db-wal
+*.db-shm
+
+# Secrets
+.env
+*.env
+!.env.example
+
+# Betriebssystem / Editor
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Interne Arbeitsdateien
+.claude/
+.superpowers/
+CLAUDE.md

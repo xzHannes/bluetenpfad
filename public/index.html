@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<title>Blütenpfad · dein Natur-Dex</title>
+<meta name="description" content="Blütenpfad – cozy Natur-Sammel-App. Wildblumen & Insekten entdecken, verorten, sammeln." />
+
+<!-- PWA -->
+<link rel="manifest" href="/manifest.webmanifest" />
+<meta name="theme-color" content="#7aa24a" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Blütenpfad" />
+<link rel="apple-touch-icon" href="/icon-180.png" />
+<link rel="icon" href="/icon.svg" type="image/svg+xml" />
+
+<!-- Fonts (mit System-Fallback wenn offline) -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
+
+<!-- Leaflet (self-hosted) -->
+<link rel="stylesheet" href="/vendor/leaflet/leaflet.css" />
+<link rel="stylesheet" href="/vendor/markercluster/MarkerCluster.css" />
+<link rel="stylesheet" href="/vendor/markercluster/MarkerCluster.Default.css" />
+
+<link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+
+<!-- dekorativer Hintergrund -->
+<div class="bg-decor" aria-hidden="true">
+  <svg class="grain"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>
+  <span class="float leaf l1">🍃</span>
+  <span class="float petal p1">🦋</span>
+  <span class="float leaf l2">🌿</span>
+  <span class="float petal p2">🌼</span>
+  <span class="float petal p3">🐝</span>
+</div>
+
+<!-- ░░ AUTH-GATE ░░ -->
+<div class="auth-wrap" id="auth" hidden>
+  <div class="auth-card">
+    <div class="auth-logo" aria-hidden="true">
+      <svg viewBox="0 0 64 64" width="58" height="58">
+        <g transform="translate(32 26)">
+          <g fill="#ef9bbd"><ellipse cx="0" cy="-13" rx="7" ry="11"/><ellipse cx="0" cy="13" rx="7" ry="11"/><ellipse cx="-13" cy="0" rx="11" ry="7"/><ellipse cx="13" cy="0" rx="11" ry="7"/></g>
+          <g fill="#f4a6c0"><ellipse cx="-9" cy="-9" rx="6.5" ry="9.5" transform="rotate(45 -9 -9)"/><ellipse cx="9" cy="-9" rx="6.5" ry="9.5" transform="rotate(-45 9 -9)"/><ellipse cx="-9" cy="9" rx="6.5" ry="9.5" transform="rotate(-45 -9 9)"/><ellipse cx="9" cy="9" rx="6.5" ry="9.5" transform="rotate(45 9 9)"/></g>
+          <circle r="7" fill="#f3c44d"/><circle r="7" fill="none" stroke="#e0a92e" stroke-width="1.5"/>
+        </g>
+        <path d="M32 36 q-2 12 -10 18" stroke="#5d8438" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M24 48 q-7 -3 -9 -10 q8 -1 11 6 z" fill="#7aa24a"/>
+      </svg>
+    </div>
+    <h1 class="auth-title">Blütenpfad</h1>
+    <p class="auth-sub">dein Natur-Dex 🍃</p>
+    <div class="seg auth-seg" id="auth-seg">
+      <button class="seg-btn active" data-mode="login">Anmelden</button>
+      <button class="seg-btn" data-mode="register">Registrieren</button>
+    </div>
+    <form id="auth-form" autocomplete="on">
+      <label class="auth-field reg-only" hidden><span>Name</span><input type="text" id="auth-name" autocomplete="name" placeholder="wie heißt du?" /></label>
+      <label class="auth-field"><span>E-Mail</span><input type="email" id="auth-email" autocomplete="email" placeholder="du@beispiel.de" required /></label>
+      <label class="auth-field"><span>Passwort</span><input type="password" id="auth-pass" autocomplete="current-password" placeholder="••••••••" required /></label>
+      <p class="auth-err" id="auth-err" hidden></p>
+      <button type="submit" class="btn btn-primary big" id="auth-submit">Los geht's 🌿</button>
+    </form>
+    <p class="auth-hint" id="auth-hint">Noch kein Konto? Tippe oben auf „Registrieren".</p>
+    <p class="auth-legal-note">Mit der Registrierung stimmst du der <a href="/datenschutz.html" target="_blank" rel="noopener">Datenschutzerklärung</a> zu.</p>
+
+    <!-- E-Mail-Bestätigung ausstehend -->
+    <div class="auth-pending" id="auth-pending" hidden>
+      <div class="ap-icon" aria-hidden="true">📬</div>
+      <h2 class="ap-title">Schau in dein Postfach</h2>
+      <p class="ap-text">Wir haben dir einen Bestätigungslink an <b id="ap-email">…</b> geschickt. Klick ihn an, dann geht's los mit dem Sammeln. 🌱</p>
+      <a class="ap-devlink" id="ap-devlink" href="#" hidden></a>
+      <p class="ap-resend-state" id="ap-resend-state" hidden></p>
+      <div class="ap-actions">
+        <button type="button" class="btn btn-soft" id="ap-resend">✉️ Mail erneut senden</button>
+        <button type="button" class="btn btn-soft sm" id="ap-back">← zurück zum Anmelden</button>
+      </div>
+    </div>
+
+    <div class="auth-legal">
+      <a href="/impressum.html" target="_blank" rel="noopener">Impressum</a>
+      <span>·</span>
+      <a href="/datenschutz.html" target="_blank" rel="noopener">Datenschutz</a>
+      <span>·</span>
+      <a href="/naturschutz.html" target="_blank" rel="noopener">Naturschutz</a>
+    </div>
+  </div>
+</div>
+
+<!-- ░░ APP ░░ -->
+<div id="app" hidden>
+<header class="topbar">
+  <div class="brand">
+    <span class="logo" aria-hidden="true">
+      <svg viewBox="0 0 64 64" width="44" height="44">
+        <g transform="translate(32 26)">
+          <g fill="#ef9bbd"><ellipse cx="0" cy="-13" rx="7" ry="11"/><ellipse cx="0" cy="13" rx="7" ry="11"/><ellipse cx="-13" cy="0" rx="11" ry="7"/><ellipse cx="13" cy="0" rx="11" ry="7"/></g>
+          <g fill="#f4a6c0"><ellipse cx="-9" cy="-9" rx="6.5" ry="9.5" transform="rotate(45 -9 -9)"/><ellipse cx="9" cy="-9" rx="6.5" ry="9.5" transform="rotate(-45 9 -9)"/><ellipse cx="-9" cy="9" rx="6.5" ry="9.5" transform="rotate(-45 -9 9)"/><ellipse cx="9" cy="9" rx="6.5" ry="9.5" transform="rotate(45 9 9)"/></g>
+          <circle r="7" fill="#f3c44d"/><circle r="7" fill="none" stroke="#e0a92e" stroke-width="1.5"/>
+          <circle cx="-2" cy="-2" r="1.4" fill="#fff" opacity=".7"/>
+        </g>
+        <path d="M32 36 q-2 12 -10 18" stroke="#5d8438" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M24 48 q-7 -3 -9 -10 q8 -1 11 6 z" fill="#7aa24a"/>
+      </svg>
+    </span>
+    <div class="brand-txt">
+      <h1>Blütenpfad</h1>
+      <p>dein Natur-Dex</p>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="stats" id="stats">
+      <button class="stat" type="button" data-stat="species" aria-label="Zu deiner Artenliste"><b id="stat-species">–</b><span>Arten</span></button>
+      <button class="stat" type="button" data-stat="total" aria-label="Zur Zeitlinie aller Funde"><b id="stat-total">–</b><span>Funde</span></button>
+      <button class="stat to-harvest" type="button" data-stat="harvest" aria-label="Zu den erntereifen Wildblumen"><b id="stat-harvest">–</b><span>zu ernten</span></button>
+    </div>
+    <div class="acct">
+      <button class="acct-btn" id="acct-btn" aria-label="Konto"><span id="acct-ini">🙂</span></button>
+      <div class="acct-menu" id="acct-menu" hidden>
+        <div class="acct-name" id="acct-name">–</div>
+        <a class="acct-link" href="/impressum.html" target="_blank" rel="noopener">📜 Impressum</a>
+        <a class="acct-link" href="/datenschutz.html" target="_blank" rel="noopener">🔒 Datenschutz</a>
+        <a class="acct-link" href="/naturschutz.html" target="_blank" rel="noopener">🌿 Naturschutz</a>
+        <button class="btn btn-soft sm" id="logout-btn">Abmelden</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- ░░ SAMMELN ░░ -->
+  <section class="view active" id="view-collect">
+    <div class="coop-banner reveal" id="coop-banner" hidden></div>
+
+    <div class="card hero reveal">
+      <div class="hero-art" aria-hidden="true">
+        <span>🌿</span><span>🦋</span><span>🐝</span><span>🌸</span>
+      </div>
+      <h2>Neue Entdeckung</h2>
+      <p class="muted">Knipse eine Pflanze oder ein Insekt – Art &amp; Standort landen in deiner Sammlung.</p>
+      <div class="gps-chip" id="gps-chip" hidden><span class="dot"></span><span id="gps-text">Standort wird gesucht…</span></div>
+      <div class="hero-actions">
+        <button class="btn btn-primary big" id="btn-capture"><span class="bi">📸</span> Foto aufnehmen</button>
+        <button class="btn btn-soft big" id="btn-import"><span class="bi">🖼️</span> Aus Fotos wählen</button>
+      </div>
+      <p class="hint" id="capture-hint"></p>
+    </div>
+
+    <button class="card progress-card reveal" style="--d:.07s" data-go="collection">
+      <div class="pc-head">
+        <h3>📖 Deine Sammlung</h3>
+        <span class="pc-count"><b id="dex-have">0</b> / <span id="dex-total">0</span></span>
+      </div>
+      <div class="pc-bar"><div class="pc-fill" id="dex-fill"></div></div>
+      <p class="pc-sub" id="dex-sub">Noch nichts entdeckt – auf in die Natur! 🌿</p>
+    </button>
+
+    <div class="card recent reveal" style="--d:.14s">
+      <div class="card-head"><h3>🌱 Zuletzt entdeckt</h3><button class="link" data-go="collection">alle →</button></div>
+      <div class="recent-strip" id="recent-strip"><p class="empty-mini">Noch nichts entdeckt – los geht's! 🌼</p></div>
+    </div>
+  </section>
+
+  <!-- ░░ SAMMLUNG ░░ -->
+  <section class="view" id="view-collection">
+    <div class="cat-seg seg" id="cat-seg">
+      <button class="seg-btn active" data-cat="plant">🌿 Pflanzen</button>
+      <button class="seg-btn" data-cat="insect">🐛 Insekten</button>
+    </div>
+    <div class="dex-toolbar">
+      <div class="seg" id="collection-mode">
+        <button class="seg-btn active" data-mode="dex">🗂️ Arten</button>
+        <button class="seg-btn" data-mode="time">📅 Zeitlinie</button>
+      </div>
+    </div>
+    <div class="sub-controls" id="dex-controls">
+      <input type="text" id="dex-search" class="pill-input" placeholder="🔍 Art suchen…" autocomplete="off" />
+      <div class="dex-legend" id="dex-legend"></div>
+    </div>
+    <div class="sub-controls" id="time-controls" hidden>
+      <button class="chip-toggle" id="journal-openonly"><span class="cbox"></span> nur zu ernten</button>
+    </div>
+    <div id="collection-body"></div>
+  </section>
+
+  <!-- ░░ PROFIL ░░ -->
+  <section class="view" id="view-profile">
+    <div class="card hero reveal profile-hero">
+      <div class="profile-avatar" aria-hidden="true"><span id="profile-emoji">🌱</span></div>
+      <h2 class="profile-name" id="profile-name">…</h2>
+      <p class="profile-title" id="profile-title">Lv – · –</p>
+      <div class="xp-bar"><div class="xp-fill" id="xp-fill"></div></div>
+      <p class="xp-label"><b id="xp-current">0</b> / <span id="xp-next">0</span> XP</p>
+    </div>
+
+    <div class="card friends-card reveal" style="--d:.05s" id="friends-card">
+      <div class="card-head">
+        <h3>🤝 Wanderfreunde</h3>
+        <span class="friends-badge" id="friends-badge" hidden>0</span>
+      </div>
+      <div id="friends-board"><p class="empty-mini">Lade Freunde…</p></div>
+    </div>
+
+    <div class="card coop-card reveal" style="--d:.08s" id="coop-card">
+      <div class="card-head"><h3>🌼 Sammel-Runde</h3></div>
+      <div id="coop-panel"><p class="empty-mini">Lädt…</p></div>
+    </div>
+
+    <div class="card quest-card reveal" style="--d:.1s">
+      <div class="card-head">
+        <h3>🎯 Aufgaben</h3>
+      </div>
+      <div class="quest-seg" id="quest-seg" role="tablist" hidden></div>
+      <div id="quest-list"><p class="empty-mini">Lade Aufgaben…</p></div>
+    </div>
+
+    <div class="card reveal" style="--d:.12s">
+      <div class="card-head">
+        <h3>🏆 Errungenschaften</h3>
+        <span class="muted" id="achievement-count">– / –</span>
+      </div>
+      <div class="achievement-grid" id="achievement-grid"></div>
+      <div class="season-badges" id="season-badges" hidden></div>
+    </div>
+
+    <button class="card recap-cta reveal" style="--d:.18s" id="btn-recap" type="button">
+      <span class="recap-cta-art" aria-hidden="true">🍂</span>
+      <span class="recap-cta-text">
+        <b>Dein Natur-Jahr</b>
+        <span class="muted">Sammel-Rückblick: Funde, Arten, Spaziergänge &amp; mehr</span>
+      </span>
+      <span class="recap-cta-arrow">→</span>
+    </button>
+
+    <div class="card reveal" style="--d:.24s">
+      <h3>📜 Rechtliches &amp; Konto</h3>
+      <div class="legal-list">
+        <a class="legal-row" href="/impressum.html" target="_blank" rel="noopener"><span class="legal-emoji">📜</span><span class="legal-text">Impressum</span><span class="legal-arrow">↗</span></a>
+        <a class="legal-row" href="/datenschutz.html" target="_blank" rel="noopener"><span class="legal-emoji">🔒</span><span class="legal-text">Datenschutz</span><span class="legal-arrow">↗</span></a>
+        <a class="legal-row" href="/naturschutz.html" target="_blank" rel="noopener"><span class="legal-emoji">🌿</span><span class="legal-text">Naturschutz beim Sammeln</span><span class="legal-arrow">↗</span></a>
+      </div>
+      <div class="account-actions">
+        <button class="btn btn-soft" id="btn-export" type="button">📥 Meine Daten exportieren</button>
+        <button class="btn btn-danger" id="btn-delete-account" type="button">🗑️ Konto löschen</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ░░ KARTE ░░ -->
+  <section class="view" id="view-map">
+    <div class="map-toolbar">
+      <div class="seg" id="map-mode">
+        <button class="seg-btn active" data-mode="pins">🗺️ Karte</button>
+        <button class="seg-btn" data-mode="walks">🥾 Spaziergänge</button>
+      </div>
+      <div class="seg" id="map-filter">
+        <button class="seg-btn active" data-filter="all">Alle</button>
+        <button class="seg-btn" data-filter="plant">🌿</button>
+        <button class="seg-btn" data-filter="insect">🐛</button>
+      </div>
+      <button class="btn btn-soft sm" id="btn-locate">📍 zu mir</button>
+    </div>
+    <div class="walk-bar" id="walk-bar" hidden>
+      <div class="walk-chips" id="walk-chips"></div>
+      <div class="walk-head" id="walk-head"></div>
+    </div>
+    <div id="map"></div>
+  </section>
+</main>
+
+<nav class="tabbar">
+  <button class="tab active" data-view="collect"><span class="ti">🌱</span><span>Sammeln</span></button>
+  <button class="tab" data-view="collection"><span class="ti">📖</span><span>Sammlung</span></button>
+  <button class="tab" data-view="map"><span class="ti">🗺️</span><span>Karte</span></button>
+  <button class="tab" data-view="profile"><span class="ti">👤</span><span>Profil</span></button>
+</nav>
+
+<input type="file" id="file-capture" accept="image/*" capture="environment" hidden />
+<input type="file" id="file-import" accept="image/*" multiple hidden />
+
+<!-- Erfassen-Sheet -->
+<div class="sheet-wrap" id="sheet" hidden>
+  <div class="sheet-backdrop"></div>
+  <div class="sheet">
+    <div class="sheet-grip"></div>
+    <div class="sheet-head">
+      <h2 id="sheet-title">Neue Entdeckung</h2>
+      <button class="x" id="sheet-close" aria-label="schließen">✕</button>
+    </div>
+    <div class="sheet-body">
+      <div class="specimen">
+        <div class="tape tape-l"></div><div class="tape tape-r"></div>
+        <img id="sheet-photo" alt="Foto" />
+        <div class="queue-badge" id="queue-badge" hidden></div>
+      </div>
+      <div class="crop-btn-row">
+        <button class="btn btn-soft sm" id="btn-crop" type="button" hidden>✏️ Ausschnitt anpassen</button>
+      </div>
+
+      <div class="seg cat-pick" id="sheet-cat">
+        <button class="seg-btn active" data-cat="plant" type="button">🌿 Pflanze</button>
+        <button class="seg-btn" data-cat="insect" type="button">🐛 Insekt</button>
+      </div>
+
+      <div class="loc-row" id="sheet-loc"><span class="dot"></span><span id="sheet-loc-text">Standort…</span><button class="btn btn-soft sm" id="sheet-loc-set" type="button">📍 Setzen</button></div>
+
+      <div class="fld-head">
+        <label class="fld-label" id="sheet-species-label">Welche Art ist das?</label>
+        <button class="btn btn-soft sm" id="btn-auto" hidden>✨ erneut erkennen</button>
+      </div>
+      <div class="suggest" id="species-suggest" hidden></div>
+      <div class="species-search">
+        <input type="text" id="species-search" placeholder="Art suchen…" autocomplete="off" />
+      </div>
+      <div class="chips" id="species-chips"></div>
+      <div class="custom-species">
+        <input type="text" id="species-custom" placeholder="…oder eigenen Namen eintippen" autocomplete="off" />
+      </div>
+
+      <label class="fld-label">Notiz <span class="muted">(optional)</span></label>
+      <textarea id="sheet-notes" rows="2" placeholder="z. B. „am Bachlauf hinter der Mühle""></textarea>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn btn-primary big" id="sheet-save">🌼 In die Sammlung</button>
+    </div>
+  </div>
+</div>
+
+<!-- Standort-Picker (Leaflet-Karte für manuelles Setzen) -->
+<div class="loc-picker" id="loc-picker" hidden>
+  <div class="loc-head">
+    <button class="x" id="loc-cancel" type="button" aria-label="abbrechen">✕</button>
+    <h3>Standort wählen</h3>
+    <button class="btn btn-soft sm" id="loc-locate" type="button">📍 zu mir</button>
+  </div>
+  <div id="loc-map"></div>
+  <div class="loc-foot">
+    <p class="loc-coords" id="loc-coords">Tippe auf die Karte um einen Punkt zu setzen</p>
+    <button class="btn btn-primary" id="loc-confirm" type="button" disabled>✓ Übernehmen</button>
+  </div>
+</div>
+
+<!-- Crop-Overlay (Instagram-Style 1:1 Pinch+Pan) -->
+<div class="crop-overlay" id="crop-overlay" hidden>
+  <div class="crop-head">
+    <button class="x" id="crop-x" type="button" aria-label="abbrechen">✕</button>
+    <h3>Ausschnitt wählen</h3>
+    <span class="crop-spacer"></span>
+  </div>
+  <div class="crop-stage" id="crop-stage">
+    <img id="crop-img" alt="" draggable="false" />
+    <div class="crop-frame" id="crop-frame" aria-hidden="true"></div>
+    <div class="crop-hint" id="crop-hint">Pinchen, ziehen, scrollen — Frame bleibt mittig</div>
+  </div>
+  <div class="crop-foot">
+    <button class="btn btn-soft" id="crop-cancel" type="button">Abbrechen</button>
+    <button class="btn btn-primary" id="crop-confirm" type="button">✓ Übernehmen</button>
+  </div>
+</div>
+
+<!-- Detail-Modal -->
+<div class="modal-wrap" id="detail" hidden>
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal">
+    <button class="x floating" data-close aria-label="schließen">✕</button>
+    <div class="detail-body" id="detail-body"></div>
+  </div>
+</div>
+
+<div class="modal-wrap" id="recap" hidden>
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal">
+    <button class="x floating" data-close aria-label="schließen">✕</button>
+    <div class="recap-body" id="recap-body"></div>
+  </div>
+</div>
+
+<!-- Konto-Löschen-Bestätigung -->
+<div class="popup-modal" id="delete-confirm" hidden>
+  <div class="popup-backdrop" data-close></div>
+  <div class="popup-card">
+    <h3>Konto wirklich löschen?</h3>
+    <p class="popup-sub">Folgendes wird <strong>unwiederbringlich</strong> entfernt:</p>
+    <ul class="delete-list">
+      <li>Account &amp; Login-Daten</li>
+      <li>Alle Funde inklusive Fotos</li>
+      <li>XP, Level, Achievements &amp; Quest-Fortschritt</li>
+      <li>Alle aktiven Sitzungen</li>
+    </ul>
+    <p class="popup-sub">Lade dir vorher mit „Daten exportieren" eine JSON-Sicherung herunter, falls du sie behalten möchtest.</p>
+    <div class="delete-actions">
+      <button class="btn btn-soft" type="button" data-close>Abbrechen</button>
+      <button class="btn btn-danger" type="button" id="btn-delete-confirm">Endgültig löschen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Avatar-Picker -->
+<div class="popup-modal" id="avatar-picker" hidden>
+  <div class="popup-backdrop" data-close></div>
+  <div class="popup-card">
+    <h3>Avatar wählen</h3>
+    <p class="popup-sub">Dein Avatar erscheint oben im Profil.</p>
+    <div class="ap-grid" id="ap-grid"></div>
+    <button class="btn btn-soft" type="button" data-close>Abbrechen</button>
+  </div>
+</div>
+
+<!-- Freunde-Overlay -->
+<div class="friends-overlay" id="friends-overlay" hidden>
+  <div class="fo-head">
+    <button class="x" id="fo-close" type="button" aria-label="schließen">✕</button>
+    <h3>🤝 Freunde</h3>
+    <span class="fo-spacer"></span>
+  </div>
+  <div class="fo-body">
+    <div class="fo-code-card">
+      <p class="fo-code-label">Dein Freundescode</p>
+      <div class="fo-code" id="fo-code">····-····</div>
+      <p class="fo-code-hint">Teile ihn mit Freunden — sie können dich damit adden.</p>
+      <div class="fo-code-actions">
+        <button class="btn btn-soft sm" id="fo-copy" type="button">📋 Kopieren</button>
+        <button class="btn btn-soft sm" id="fo-share" type="button" hidden>📤 Teilen</button>
+      </div>
+    </div>
+
+    <div class="fo-add">
+      <label class="fo-add-label" for="fo-add-input">Freund hinzufügen</label>
+      <div class="fo-add-row">
+        <input type="text" id="fo-add-input" class="pill-input" placeholder="Code z. B. ABCD-2345" autocomplete="off" maxlength="9" autocapitalize="characters" />
+        <button class="btn btn-primary sm" id="fo-add-btn" type="button">Hinzufügen</button>
+      </div>
+      <p class="fo-add-msg" id="fo-add-msg" hidden></p>
+    </div>
+
+    <div class="fo-section" id="fo-incoming-wrap" hidden>
+      <p class="fo-section-label">📨 Anfragen an dich</p>
+      <div id="fo-incoming"></div>
+    </div>
+
+    <div class="fo-section" id="fo-outgoing-wrap" hidden>
+      <p class="fo-section-label">⏳ Gesendet</p>
+      <div id="fo-outgoing"></div>
+    </div>
+
+    <div class="fo-section">
+      <p class="fo-section-label">🌿 Deine Freunde <span class="fo-count" id="fo-friend-count"></span></p>
+      <div id="fo-friends"><p class="empty-mini">Lade…</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- Freund-Profil-Modal -->
+<div class="friend-profile-modal" id="friend-profile" hidden>
+  <div class="popup-backdrop" data-close></div>
+  <div class="fp-card">
+    <button class="x" type="button" data-close aria-label="schließen">✕</button>
+    <div class="fp-body" id="fp-body"><p class="empty-mini">Lade Profil…</p></div>
+  </div>
+</div>
+
+<!-- Achievement-Detail -->
+<div class="popup-modal" id="ach-detail" hidden>
+  <div class="popup-backdrop" data-close></div>
+  <div class="popup-card ach-card">
+    <button class="x" type="button" data-close aria-label="schließen">✕</button>
+    <div class="ad-emoji" id="ad-emoji">🌱</div>
+    <h3 id="ad-name">Name</h3>
+    <p class="ad-desc" id="ad-desc">Beschreibung</p>
+    <div class="ad-meta">
+      <span class="ad-pill ad-xp" id="ad-xp">+0 XP</span>
+      <span class="ad-pill ad-date" id="ad-date">freigeschaltet</span>
+    </div>
+  </div>
+</div>
+
+<!-- Foto-Lightbox -->
+<div class="lightbox" id="lightbox" hidden>
+  <button class="x" id="lb-close" type="button" aria-label="schließen">✕</button>
+  <div class="lb-track" id="lb-track"></div>
+  <div class="lb-nav">
+    <button id="lb-prev" type="button" aria-label="vorheriges Foto">‹</button>
+    <span id="lb-counter">1 / 1</span>
+    <button id="lb-next" type="button" aria-label="nächstes Foto">›</button>
+  </div>
+</div>
+
+<!-- Level-Up-Overlay -->
+<div class="level-up" id="level-up" hidden>
+  <div class="lvl-card">
+    <div class="lvl-emoji" id="lvl-emoji">🌿</div>
+    <p class="lvl-eyebrow">Level erreicht</p>
+    <h2 class="lvl-num" id="lvl-num">2</h2>
+    <p class="lvl-title" id="lvl-title">Naturfreund:in</p>
+  </div>
+</div>
+
+<div class="bloom" id="bloom" hidden></div>
+<div class="toast" id="toast" hidden></div>
+</div><!-- /#app -->
+
+<script src="/vendor/leaflet/leaflet.js"></script>
+<script src="/vendor/markercluster/leaflet.markercluster.js"></script>
+<script src="/vendor/exifr.umd.js"></script>
+<script src="/species.js"></script>
+<script src="/app.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').catch((err) => console.warn('[sw]', err));
+    });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+# /etc/caddy/Caddyfile — Blütenpfad
+# www → apex Redirect, Apex bedient die App.
+
+(security_headers) {
+  header {
+    Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    X-Content-Type-Options "nosniff"
+    Referrer-Policy "strict-origin-when-cross-origin"
+    Permissions-Policy "geolocation=(self), camera=(self), microphone=()"
+    -Server
+  }
+}
+
+www.bluetenpfad.de {
+  import security_headers
+  redir https://bluetenpfad.de{uri} 308
+}
+
+bluetenpfad.de {
+  import security_headers
+  encode zstd gzip
+
+  # /health darf nicht in den Server-Logs landen – ist nur Liveness-Pingziel
+  @health path /health
+  log_skip @health
+
+  reverse_proxy 127.0.0.1:8068 {
+    header_up X-Forwarded-Proto {scheme}
+    header_up X-Forwarded-Host {host}
+  }
+}

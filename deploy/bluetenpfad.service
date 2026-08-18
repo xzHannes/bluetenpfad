@@ -1,0 +1,48 @@
+[Unit]
+Description=Blütenpfad – cozy Natur-Sammel-App
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=bluetenpfad
+Group=bluetenpfad
+WorkingDirectory=/opt/bluetenpfad/app
+ExecStart=/usr/bin/node server.js
+Restart=always
+RestartSec=3
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=bluetenpfad
+
+# ── Runtime-Env ───────────────────────────────────────────────────
+Environment=NODE_ENV=production
+Environment=TRUST_PROXY=1
+Environment=WB_HOST=127.0.0.1
+Environment=WB_HTTP_PORT=8068
+Environment=WB_HTTPS_PORT=0
+Environment=WB_MEDIA_DIR=/var/lib/bluetenpfad
+Environment=WB_DATA_DIR=/var/lib/bluetenpfad/data
+Environment=WB_ALLOWED_ORIGINS=https://bluetenpfad.de,https://www.bluetenpfad.de
+# Hinweis: PLANTNET_API_KEY in /etc/bluetenpfad.env eintragen (nicht im Repo, nicht hier).
+EnvironmentFile=-/etc/bluetenpfad.env
+
+# ── Härtung ───────────────────────────────────────────────────────
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/bluetenpfad
+ProtectHome=true
+PrivateTmp=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictNamespaces=true
+LockPersonality=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+SystemCallArchitectures=native
+CapabilityBoundingSet=
+AmbientCapabilities=
+
+[Install]
+WantedBy=multi-user.target
